@@ -16,14 +16,10 @@
     "tasks",
     "knowledge-base",
     "guidelines",
-    "ai-native",
-    "productivity",
-    "developer-tools"
+    "ai-native"
   ],
   "skills": "./skills/",
-  "agents": "./agents/",
   "commands": "./commands/",
   "hooks": "./hooks/hooks.json",
-  "mcpServers": "./.mcp.json",
-  "styles": "./styles/"
+  "mcpServers": "./.mcp.json"
 }
