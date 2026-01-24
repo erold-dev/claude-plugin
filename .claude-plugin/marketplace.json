@@ -1,0 +1,26 @@
+{
+  "name": "erold-plugins",
+  "owner": {
+    "name": "Erold",
+    "email": "hello@erold.dev"
+  },
+  "metadata": {
+    "description": "Official Erold plugins for AI-native project management",
+    "version": "1.0.0"
+  },
+  "plugins": [
+    {
+      "name": "erold",
+      "source": {
+        "source": "github",
+        "repo": "erold-dev/claude-plugin"
+      },
+      "description": "AI-native project management with workflow enforcement. Understand → Plan → Execute → Learn.",
+      "version": "1.0.0",
+      "author": {
+        "name": "Erold",
+        "email": "hello@erold.dev"
+      }
+    }
+  ]
+}
