@@ -1,8 +1,8 @@
 {
   "mcpServers": {
     "erold-pm": {
-      "command": "node",
-      "args": ["/Users/sid/code/erold/mcp-server/dist/index.js"],
+      "command": "npx",
+      "args": ["-y", "@erold/mcp-server@latest"],
       "env": {
         "EROLD_API_KEY": "${EROLD_API_KEY}",
         "EROLD_TENANT": "${EROLD_TENANT_ID}",
