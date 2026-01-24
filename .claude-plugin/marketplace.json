@@ -12,8 +12,8 @@
     {
       "name": "erold",
       "source": {
-        "source": "github",
-        "repo": "erold-dev/claude-plugin"
+        "source": "url",
+        "url": "https://github.com/erold-dev/claude-plugin.git"
       },
       "description": "AI-native project management with workflow enforcement. Understand → Plan → Execute → Learn.",
       "version": "1.0.0",
