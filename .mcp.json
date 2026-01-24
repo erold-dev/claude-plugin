@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "erold-pm": {
+      "command": "npx",
+      "args": ["-y", "@erold/mcp-server@latest"],
+      "env": {
+        "EROLD_API_KEY": "${EROLD_API_KEY}",
+        "EROLD_TENANT": "${EROLD_TENANT_ID}",
+        "EROLD_API_URL": "${EROLD_API_URL:-https://api.erold.dev/api/v1}"
+      }
+    }
+  }
+}
