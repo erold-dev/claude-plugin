@@ -29,14 +29,37 @@ claude --plugin-dir /path/to/claude-plugin
 
 ## Prerequisites
 
-Set your Erold credentials as environment variables:
+**Important:** Claude Code does NOT expand `${VAR}` in config files. Use actual values.
 
-```bash
-export EROLD_API_KEY="erold_your_api_key"
-export EROLD_TENANT_ID="your-tenant-id"
-```
+1. **Get your credentials** from [app.erold.dev](https://app.erold.dev):
+   - API Key: Settings → API Keys
+   - Tenant ID: Settings → Workspace (or from URL)
 
-Get your API key from [app.erold.dev](https://app.erold.dev) → Settings → API Keys.
+2. **Create `~/.claude/mcp.json`** with your **actual credentials**:
+   ```json
+   {
+     "mcpServers": {
+       "erold-pm": {
+         "command": "npx",
+         "args": ["-y", "@erold/mcp-server@latest"],
+         "env": {
+           "EROLD_API_KEY": "erold_YOUR_ACTUAL_KEY_HERE",
+           "EROLD_TENANT": "YOUR_ACTUAL_TENANT_ID_HERE",
+           "EROLD_API_URL": "https://api.erold.dev/api/v1"
+         }
+       }
+     }
+   }
+   ```
+
+3. **After installing plugin**, also update:
+   ```
+   ~/.claude/plugins/cache/erold-plugins/erold/VERSION/.mcp.json
+   ```
+
+4. **Restart Claude Code** completely.
+
+**[Full Setup Guide](docs/SETUP.md)** - Detailed instructions and troubleshooting.
 
 ## Skills (Slash Commands)
 
@@ -71,11 +94,16 @@ Get your API key from [app.erold.dev](https://app.erold.dev) → Settings → AP
 
 The plugin includes automatic hooks for workflow enforcement:
 
-- **Session start** - Auto-load context
-- **Pre-edit** - Check for active task
-- **Post-edit** - Log activity
-- **Pre-commit** - Code review
-- **Task complete** - Suggest learnings
+| Event | Hook | Description |
+|-------|------|-------------|
+| `SessionStart` | `session-start.sh` | Auto-loads Erold project context and active tasks |
+| `PreToolUse` | `check-active-task.sh` | Reminds to track work with `/erold:execute` |
+| `PreToolUse` | `check-git-commit.sh` | Suggests including task ID in commit messages |
+| `PostToolUse` | `log-file-change.sh` | Tracks file changes for active tasks |
+| `PostToolUse` | `suggest-learning.sh` | Suggests `/erold:learn` after task completion |
+| `Stop` | (prompt-based) | Reminds about in-progress tasks before stopping |
+
+Hooks run automatically - no configuration needed. View active hooks with `/hooks`.
 
 ## Architecture
 
@@ -156,12 +184,15 @@ claude-plugin/
 │   ├── sync.md              # /erold:sync
 │   └── report.md            # /erold:report
 ├── hooks/
-│   └── hooks.json           # Workflow hooks
+│   └── hooks.json           # Workflow hooks config
 ├── styles/
 │   └── erold-output.md      # Output formatting
 └── scripts/
-    ├── check-task.sh        # Verify task exists
-    └── log-activity.sh      # Log file changes
+    ├── session-start.sh     # Load context at session start
+    ├── check-active-task.sh # Check for active task before edits
+    ├── check-git-commit.sh  # Suggest task ID in commits
+    ├── log-file-change.sh   # Track file changes
+    └── suggest-learning.sh  # Suggest learnings after completion
 ```
 
 ## Related

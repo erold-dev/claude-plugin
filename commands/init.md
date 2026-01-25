@@ -9,9 +9,42 @@ Set up Erold project management for this codebase.
 ## What This Does
 
 1. **Checks for existing Erold project** - Looks for `.erold.json` config
-2. **Prompts for setup** - If not found, guides through configuration
-3. **Creates config file** - Saves `.erold.json` with project settings
-4. **Loads initial context** - Fetches project state from Erold
+2. **Detects tech stack** - Scans package.json, Cargo.toml, pyproject.toml, etc.
+3. **Auto-selects guidelines** - Based on detected technologies
+4. **Creates config file** - Saves `.erold.json` with project settings
+5. **Loads initial context** - Fetches project state from Erold
+
+## Tech Stack Detection
+
+Scan these files to detect the tech stack:
+
+| File | Technologies |
+|------|-------------|
+| `package.json` with `next` | nextjs, react, typescript |
+| `package.json` with `react` (no next) | react, typescript |
+| `package.json` with `tailwindcss` | tailwind |
+| `package.json` with `@tauri-apps` | desktop |
+| `package.json` with `electron` | desktop |
+| `Cargo.toml` | systems (Rust) |
+| `pyproject.toml` or `requirements.txt` with `fastapi` | fastapi |
+| `pyproject.toml` or `requirements.txt` with `django` | backend |
+| `pubspec.yaml` | mobile (Flutter) |
+| `*.swift` or `Package.swift` | mobile (iOS) |
+| `*.bicep` or `*.tf` | cloud, devops |
+
+Always include: `security`, `testing`
+
+## Guideline Categories
+
+Available topics (pick based on tech stack):
+- **Frontend**: nextjs, react, typescript, tailwind, uiux
+- **Backend**: fastapi, api, backend, database
+- **Systems**: systems (Go, Rust, C++)
+- **Mobile**: mobile (Flutter, Swift, Kotlin)
+- **Desktop**: desktop (Tauri, Electron)
+- **Cloud**: cloud (AWS, Azure), devops
+- **AI**: ai (LLM, RAG)
+- **Always**: security, testing
 
 ## Setup Flow
 
@@ -19,7 +52,6 @@ Set up Erold project management for this codebase.
 ```
 ✓ Erold already configured for this project
   Project: my-awesome-app
-  Tenant: acme-corp
 
 Loading context...
 ```
@@ -29,27 +61,22 @@ Loading context...
 🚀 Initialize Erold for this project
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-Step 1: Connect to Erold
-  Enter your tenant slug: [acme-corp]
+Step 1: Detect Tech Stack
+  Found: package.json → Next.js 15, React 19, Tailwind CSS
 
-Step 2: Select or Create Project
-  Found existing projects:
-    1. frontend-app
-    2. backend-api
-    3. [Create new project]
+Step 2: Select Guidelines
+  Auto-selected: nextjs, react, typescript, tailwind, security, testing
 
-  Select: [1]
+Step 3: Connect to Erold
+  Checking existing projects...
+  Found matching: "my-awesome-app"
 
-Step 3: Configure Defaults
-  Default assignee for AI tasks: [me/@username]
-  Auto-load context on session start: [yes]
-  Enable workflow enforcement: [yes]
+Step 4: Link Project
+  Linked to project ID: proj_abc123
 
 ✓ Created .erold.json
-✓ Project linked: frontend-app
+✓ Guidelines: nextjs, react, typescript, tailwind, security, testing
 ✓ Ready to use Erold!
-
-Try: /erold:context to load current state
 ```
 
 ## Config File Format
@@ -58,24 +85,52 @@ Creates `.erold.json` in project root:
 
 ```json
 {
-  "tenant": "acme-corp",
-  "project": "frontend-app",
   "projectId": "proj_abc123",
+  "projectName": "my-awesome-app",
   "settings": {
-    "defaultAssignee": "me",
     "autoContext": true,
     "workflowEnforcement": true,
-    "guidelinesCategories": ["nextjs", "security", "testing"]
+    "guidelinesCategories": ["nextjs", "react", "typescript", "tailwind", "security", "testing"]
   }
 }
+```
+
+## Examples by Project Type
+
+### Next.js Project
+```json
+"guidelinesCategories": ["nextjs", "react", "typescript", "tailwind", "security", "testing"]
+```
+
+### Python FastAPI Project
+```json
+"guidelinesCategories": ["fastapi", "api", "database", "security", "testing"]
+```
+
+### Rust Project
+```json
+"guidelinesCategories": ["systems", "security", "testing"]
+```
+
+### Tauri Desktop App
+```json
+"guidelinesCategories": ["desktop", "typescript", "react", "security", "testing"]
+```
+
+### Flutter Mobile App
+```json
+"guidelinesCategories": ["mobile", "security", "testing"]
+```
+
+### Monorepo (mixed)
+```json
+"guidelinesCategories": ["nextjs", "fastapi", "devops", "security", "testing"]
 ```
 
 ## Options
 
 ```
-/erold:init                    # Interactive setup
-/erold:init --tenant acme      # Specify tenant
-/erold:init --project my-app   # Specify project
+/erold:init                    # Interactive setup with auto-detect
 /erold:init --link proj_123    # Link to existing project ID
 /erold:init --new "My Project" # Create new project
 ```
@@ -91,4 +146,5 @@ Recommended next steps:
 
 - `.erold.json` should be committed to version control
 - Team members will auto-connect to the same project
-- API key is NOT stored in config (use environment variable)
+- Guidelines can be manually adjusted in `.erold.json`
+- Re-run `/erold:init` to update after adding new tech

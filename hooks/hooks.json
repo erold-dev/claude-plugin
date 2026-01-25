@@ -1,53 +1,71 @@
 {
-  "hooks": [
-    {
-      "name": "load-context-on-start",
-      "description": "Automatically load Erold workspace context at session start",
-      "event": "SessionStart",
-      "type": "prompt",
-      "prompt": "If EROLD_API_KEY and EROLD_TENANT environment variables are set, automatically load Erold context using the erold-pm MCP server's get_context tool. Present a brief summary of active project, assigned tasks, and any blockers. If credentials not set, skip silently."
-    },
-    {
-      "name": "check-task-before-edit",
-      "description": "Verify an Erold task exists before making code changes",
-      "event": "PreToolUse",
-      "tools": ["Edit", "Write", "NotebookEdit"],
-      "type": "prompt",
-      "prompt": "Before this file edit, check if there is an active Erold task (status: in-progress) for this work by calling get_context or get_dashboard. If no active task exists and this is a significant code change (not just fixing typos or adding comments), warn the user and suggest: 1) Use /erold:task start <id> to start an existing task, or 2) Use /erold:plan to create tasks first. Do NOT block minor edits like formatting or comments. Be helpful, not annoying."
-    },
-    {
-      "name": "log-progress-after-edit",
-      "description": "Log significant file changes to Erold activity",
-      "event": "PostToolUse",
-      "tools": ["Edit", "Write"],
-      "type": "prompt",
-      "prompt": "After this file edit, if there is an active Erold task (check context), consider adding a brief progress comment using add_task_comment if: 1) Multiple files were changed, 2) A significant feature was implemented, 3) A bug was fixed. Keep comments concise. Skip for trivial changes. Don't be noisy."
-    },
-    {
-      "name": "review-before-commit",
-      "description": "Review code against guidelines before git commit",
-      "event": "PreToolUse",
-      "tools": ["Bash"],
-      "matcher": "^git commit",
-      "type": "prompt",
-      "prompt": "Before this git commit, do a quick review: 1) Check if changes follow project guidelines (get_tech_info for stack, then recall relevant standards), 2) Verify no obvious security issues (hardcoded secrets, SQL injection, XSS), 3) Check if tests should be added. If issues found, warn the user but don't block the commit. Suggest fixes."
-    },
-    {
-      "name": "suggest-learning-after-complete",
-      "description": "Suggest capturing learnings when a task is completed",
-      "event": "PostToolUse",
-      "tools": ["mcp__erold-pm__complete_task"],
-      "type": "prompt",
-      "prompt": "After completing this task, analyze what was done and suggest potential learnings to capture. Look for: 1) New patterns that could be reused, 2) Bug fixes that others should know about, 3) Performance optimizations, 4) Security considerations. If valuable learnings exist, suggest using /erold:learn to save them. Don't force it if the work was trivial."
-    },
-    {
-      "name": "warn-on-pr-without-tasks",
-      "description": "Check for linked tasks when creating a PR",
-      "event": "PreToolUse",
-      "tools": ["Bash"],
-      "matcher": "^gh pr create",
-      "type": "prompt",
-      "prompt": "Before creating this PR, check if there are related Erold tasks. Search for tasks matching the branch name or recent work. If tasks found, suggest including task IDs in the PR description for traceability. If no tasks found, warn that work may not be tracked in Erold."
-    }
-  ]
+  "description": "Erold workflow automation hooks - load context, track work, enforce guidelines",
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/session-start.sh",
+            "timeout": 15
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write|NotebookEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/check-active-task.sh",
+            "timeout": 10
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/check-git-commit.sh",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/log-file-change.sh",
+            "timeout": 10
+          }
+        ]
+      },
+      {
+        "matcher": "mcp__plugin_erold_erold-pm__complete_task",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/suggest-learning.sh",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "prompt",
+            "prompt": "Check if there is an active Erold task (from the conversation context). If a task was being worked on but not marked complete, remind the user to either complete it with /erold:task complete <id> or leave it in progress for later. If no task context, allow stopping. Respond with {\"ok\": true} to allow, or {\"ok\": false, \"reason\": \"Task TASK-123 is still in progress. Complete it or leave for later?\"} to prompt.",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
 }
