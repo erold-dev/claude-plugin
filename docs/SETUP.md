@@ -8,10 +8,6 @@ Complete guide to set up the Erold plugin for Claude Code.
 - An Erold account at [app.erold.dev](https://app.erold.dev)
 - API key from Settings > API Keys
 
-## Important Note
-
-**Claude Code does NOT expand environment variables** like `${VAR}` or `$VAR` in `.mcp.json` files. You must hardcode your actual credentials.
-
 ## Quick Setup
 
 ### Step 1: Get Your Credentials
@@ -22,7 +18,7 @@ From [app.erold.dev](https://app.erold.dev):
 
 ### Step 2: Create Global MCP Config
 
-Create `~/.claude/mcp.json` with your **actual credentials** (not variables):
+Create `~/.claude/mcp.json` with your credentials:
 
 ```json
 {
@@ -31,14 +27,16 @@ Create `~/.claude/mcp.json` with your **actual credentials** (not variables):
       "command": "npx",
       "args": ["-y", "@erold/mcp-server@latest"],
       "env": {
-        "EROLD_API_KEY": "erold_YOUR_ACTUAL_API_KEY_HERE",
-        "EROLD_TENANT": "YOUR_ACTUAL_TENANT_ID_HERE",
+        "EROLD_API_KEY": "erold_YOUR_API_KEY_HERE",
+        "EROLD_TENANT": "YOUR_TENANT_ID_HERE",
         "EROLD_API_URL": "https://api.erold.dev/api/v1"
       }
     }
   }
 }
 ```
+
+> **Important:** Always use `~/.claude/mcp.json` for your credentials. This file survives plugin updates. Never edit the plugin cache directory.
 
 **One-liner (replace with your values):**
 ```bash
@@ -59,32 +57,23 @@ mkdir -p ~/.claude && cat > ~/.claude/mcp.json << 'EOF'
 EOF
 ```
 
-### Step 3: Install Plugin (Optional but Recommended)
+### Step 3: Install Plugin
 
 ```bash
 claude plugin install erold-dev/claude-plugin --scope user
 ```
 
-**Important:** After installing, also update the plugin's `.mcp.json`:
-```
-~/.claude/plugins/cache/erold-plugins/erold/1.0.0/.mcp.json
-```
-
-Replace the `${VAR}` syntax with your actual credentials (same format as Step 2).
-
 ### Step 4: Restart Claude Code
 
-**Completely quit** Claude Code (Cmd+Q or close terminal) and start fresh. New sessions will pick up the config.
+**Completely quit** Claude Code (Cmd+Q or close terminal) and start fresh.
 
 ## Verify Installation
 
-In a new Claude Code session, run:
+In a new Claude Code session:
 
-```
-/erold:status
-```
-
-You should see your dashboard with projects and tasks.
+1. Run `/mcp` - should show `erold-pm` as connected
+2. Run `/hooks` - should show Erold hooks loaded
+3. Run `/erold:status` - should show your dashboard
 
 ## Per-Project Setup
 
@@ -95,6 +84,14 @@ For each project you want to track with Erold:
 ```
 
 This creates `.erold.json` in your project root linking it to an Erold project.
+
+## Updating the Plugin
+
+```bash
+claude plugin update erold@erold-plugins
+```
+
+Your credentials in `~/.claude/mcp.json` are preserved - no action needed after updates.
 
 ## Available Commands
 
@@ -116,33 +113,29 @@ This creates `.erold.json` in your project root linking it to an Erold project.
 
 ### "Invalid API key format" or MCP not connecting
 
-1. **Check .mcp.json has actual values:**
+1. **Check your config has actual values:**
    ```bash
    cat ~/.claude/mcp.json
    ```
-   Should show your real API key, NOT `${EROLD_API_KEY}`
+   Should show your real API key, NOT `${EROLD_API_KEY}` or placeholders.
 
-2. **Check plugin's .mcp.json too:**
-   ```bash
-   cat ~/.claude/plugins/cache/erold-plugins/erold/1.0.0/.mcp.json
-   ```
+2. **Restart Claude Code completely** - not just a new session
 
-3. **Restart Claude Code completely** - not just a new session
-
-4. **Test MCP server directly:**
+3. **Test MCP server directly:**
    ```bash
    EROLD_API_KEY="your_key" EROLD_TENANT="your_tenant" npx -y @erold/mcp-server@latest
    ```
 
-### "EROLD_TENANT environment variable required"
-
-The `.mcp.json` is using `${VAR}` syntax. Replace with actual values.
-
 ### "Executable not found in $PATH" or MCP server failed
 
-Claude Code doesn't always inherit your shell's full PATH. If `npx` or globally installed binaries aren't found:
+Claude Code doesn't always inherit your shell's full PATH. Use absolute paths:
 
-**Option A: Use absolute path to npx (Recommended)**
+**Option A: Find and use absolute path to npx**
+```bash
+which npx
+# Example: /usr/local/bin/npx
+```
+
 ```json
 {
   "mcpServers": {
@@ -155,24 +148,18 @@ Claude Code doesn't always inherit your shell's full PATH. If `npx` or globally 
 }
 ```
 
-Find your npx path with: `which npx`
-
-**Option B: Install globally and use absolute path**
+**Option B: Install globally and use binary path**
 ```bash
-# Install globally
 npm install -g @erold/mcp-server
-
-# Find the binary path
 which erold-mcp
-# Example: /Users/yourname/.nvm/versions/node/v22.21.1/bin/erold-mcp
+# Example: /Users/yourname/.nvm/versions/node/v22/bin/erold-mcp
 ```
 
-Then use the full path in `.mcp.json`:
 ```json
 {
   "mcpServers": {
     "erold-pm": {
-      "command": "/Users/yourname/.nvm/versions/node/v22.21.1/bin/erold-mcp",
+      "command": "/Users/yourname/.nvm/versions/node/v22/bin/erold-mcp",
       "env": {
         "EROLD_API_KEY": "erold_YOUR_KEY",
         "EROLD_TENANT": "YOUR_TENANT_ID",
@@ -183,28 +170,26 @@ Then use the full path in `.mcp.json`:
 }
 ```
 
-### Plugin updates overwrite config
+### Hooks not running
 
-After running `claude plugin update`, you need to re-edit:
-```
-~/.claude/plugins/cache/erold-plugins/erold/VERSION/.mcp.json
-```
+1. Check hooks are loaded: `/hooks`
+2. Ensure plugin is enabled: Check `~/.claude/settings.json`
+3. Restart Claude Code completely
 
 ## File Locations
 
 | File | Purpose |
 |------|---------|
-| `~/.claude/mcp.json` | Global MCP server config |
+| `~/.claude/mcp.json` | Your MCP credentials (edit this one) |
 | `~/.claude/settings.json` | Plugin enabled/disabled |
-| `~/.claude/plugins/cache/erold-plugins/erold/VERSION/.mcp.json` | Installed plugin's MCP config |
 | `.erold.json` (project root) | Per-project Erold link |
 
 ## Security Note
 
-The `.mcp.json` files contain your API key. Ensure:
-- `~/.claude/` directory has restricted permissions
-- Don't commit `.mcp.json` to version control
-- Regenerate API key if compromised
+The `~/.claude/mcp.json` file contains your API key:
+- Ensure `~/.claude/` directory has restricted permissions (`chmod 700 ~/.claude`)
+- Never commit `mcp.json` to version control
+- Regenerate API key if compromised at [app.erold.dev](https://app.erold.dev)
 
 ## Getting Help
 

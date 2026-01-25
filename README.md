@@ -29,13 +29,11 @@ claude --plugin-dir /path/to/claude-plugin
 
 ## Prerequisites
 
-**Important:** Claude Code does NOT expand `${VAR}` in config files. Use actual values.
-
 1. **Get your credentials** from [app.erold.dev](https://app.erold.dev):
    - API Key: Settings → API Keys
    - Tenant ID: Settings → Workspace (or from URL)
 
-2. **Create `~/.claude/mcp.json`** with your **actual credentials**:
+2. **Create `~/.claude/mcp.json`** with your credentials:
    ```json
    {
      "mcpServers": {
@@ -52,12 +50,11 @@ claude --plugin-dir /path/to/claude-plugin
    }
    ```
 
-3. **After installing plugin**, also update:
-   ```
-   ~/.claude/plugins/cache/erold-plugins/erold/VERSION/.mcp.json
-   ```
+   > **Note:** Use `~/.claude/mcp.json` (not the plugin directory). This ensures credentials survive plugin updates.
 
-4. **Restart Claude Code** completely.
+3. **Restart Claude Code** completely.
+
+4. **Verify** with `/mcp` - should show `erold-pm` connected.
 
 **[Full Setup Guide](docs/SETUP.md)** - Detailed instructions and troubleshooting.
 
@@ -165,7 +162,8 @@ Claude: Let me load the project context first...
 claude-plugin/
 ├── .claude-plugin/
 │   └── plugin.json          # Plugin manifest
-├── .mcp.json                 # MCP server config
+├── .mcp.json.example         # MCP config template (copy to ~/.claude/mcp.json)
+├── CHANGELOG.md              # Version history
 ├── skills/
 │   ├── context/SKILL.md     # /erold:context
 │   ├── plan/SKILL.md        # /erold:plan
