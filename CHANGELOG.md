@@ -5,6 +5,21 @@ All notable changes to the Erold Plugin for Claude Code will be documented in th
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] - 2025-01-25
+
+### Added
+- **Proactive automation** - Erold now automatically manages tasks and captures knowledge
+- `CLAUDE.md` - Injects proactive behaviors into every Claude Code session
+- Auto-create tasks when user describes work to do
+- Auto-start tasks before editing code
+- Auto-complete tasks when work is finished
+- Auto-capture knowledge when errors are fixed or patterns discovered
+- Auto-fetch guidelines before implementing features
+
+### Changed
+- Rewrote `agents/workflow-enforcer.md` to be proactive instead of passive
+- Changed philosophy from "suggest and remind" to "do it and tell user"
+
 ## [1.1.1] - 2025-01-25
 
 ### Changed
