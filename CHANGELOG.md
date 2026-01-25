@@ -5,6 +5,27 @@ All notable changes to the Erold Plugin for Claude Code will be documented in th
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.0] - 2025-01-25
+
+### Added
+- **Knowledge-first workflow** - Always search knowledge before implementing
+- **Failed attempts tracking** - Log what didn't work to task comments (TRIED/FAILED/REASON)
+- **"What Didn't Work" pattern** - All troubleshooting knowledge includes failed approaches
+- **Session summaries** - Stop hook saves progress summary to active task
+- **File change logging** - PostToolUse hook now actually logs to Erold API
+- **Cross-session continuity** - Task comments preserve context between sessions
+
+### Changed
+- Rewrote `CLAUDE.md` with comprehensive BEFORE/DURING/AFTER workflow
+- Enhanced `workflow-enforcer.md` with 4-phase methodology (Understand → Plan → Execute → Learn)
+- Updated Stop hook to auto-save session context before ending
+- `log-file-change.sh` now calls Erold API to log changes to active task
+
+### Philosophy
+- Search knowledge BEFORE implementing (don't repeat mistakes)
+- Track failed attempts (gold for future sessions)
+- Include "What Didn't Work" in all troubleshooting knowledge
+
 ## [1.2.0] - 2025-01-25
 
 ### Added

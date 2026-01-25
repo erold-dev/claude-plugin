@@ -61,8 +61,8 @@
         "hooks": [
           {
             "type": "prompt",
-            "prompt": "Check if there is an active Erold task (from the conversation context). If a task was being worked on but not marked complete, remind the user to either complete it with /erold:task complete <id> or leave it in progress for later. If no task context, allow stopping. Respond with {\"ok\": true} to allow, or {\"ok\": false, \"reason\": \"Task TASK-123 is still in progress. Complete it or leave for later?\"} to prompt.",
-            "timeout": 10
+            "prompt": "Before the session ends, do the following automatically:\n\n1. CHECK ACTIVE TASK: If there's an active Erold task from this session:\n   - If work is complete: call complete_task with a summary\n   - If work is incomplete: call add_task_comment with session progress summary\n\n2. SAVE SESSION CONTEXT: If significant work was done, add a task comment:\n   ```\n   call add_task_comment(\n     taskId=\"active-task-id\",\n     content=\"SESSION END SUMMARY:\\nProgress: {what was accomplished}\\nPending: {what's left to do}\\nNotes: {important context for next session}\"\n   )\n   ```\n\n3. EXTRACT LEARNINGS: If any errors were fixed or patterns discovered that aren't in the knowledge base, save them now.\n\n4. Respond with {\"ok\": true} after completing these actions. If no task was active, just respond {\"ok\": true}.",
+            "timeout": 30
           }
         ]
       }
