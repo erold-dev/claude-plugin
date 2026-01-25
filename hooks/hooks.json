@@ -1,5 +1,5 @@
 {
-  "description": "Erold workflow automation hooks - load context, track work, enforce guidelines",
+  "description": "Erold workflow hooks - context loading, file tracking, session management",
   "hooks": {
     "SessionStart": [
       {
@@ -8,28 +8,6 @@
             "type": "command",
             "command": "${CLAUDE_PLUGIN_ROOT}/scripts/session-start.sh",
             "timeout": 15
-          }
-        ]
-      }
-    ],
-    "PreToolUse": [
-      {
-        "matcher": "Edit|Write|NotebookEdit",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/check-active-task.sh",
-            "timeout": 10
-          }
-        ]
-      },
-      {
-        "matcher": "Bash",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/check-git-commit.sh",
-            "timeout": 10
           }
         ]
       }
@@ -44,16 +22,6 @@
             "timeout": 10
           }
         ]
-      },
-      {
-        "matcher": "mcp__plugin_erold_erold-pm__complete_task",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/suggest-learning.sh",
-            "timeout": 5
-          }
-        ]
       }
     ],
     "Stop": [
@@ -61,8 +29,8 @@
         "hooks": [
           {
             "type": "prompt",
-            "prompt": "Before the session ends, do the following automatically:\n\n1. CHECK ACTIVE TASK: If there's an active Erold task from this session:\n   - If work is complete: call complete_task with a summary\n   - If work is incomplete: call add_task_comment with session progress summary\n\n2. SAVE SESSION CONTEXT: If significant work was done, add a task comment:\n   ```\n   call add_task_comment(\n     taskId=\"active-task-id\",\n     content=\"SESSION END SUMMARY:\\nProgress: {what was accomplished}\\nPending: {what's left to do}\\nNotes: {important context for next session}\"\n   )\n   ```\n\n3. EXTRACT LEARNINGS: If any errors were fixed or patterns discovered that aren't in the knowledge base, save them now.\n\n4. Respond with {\"ok\": true} after completing these actions. If no task was active, just respond {\"ok\": true}.",
-            "timeout": 30
+            "prompt": "If there's an active Erold task from this session: (1) If work complete, call complete_task with summary. (2) If incomplete, call add_task_comment with progress summary for next session. Then respond {\"ok\": true}.",
+            "timeout": 20
           }
         ]
       }

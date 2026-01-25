@@ -5,6 +5,25 @@ All notable changes to the Erold Plugin for Claude Code will be documented in th
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.0] - 2025-01-25
+
+### Changed
+- **Simplified CLAUDE.md** - Reduced from 207 to 67 lines, focused on essentials
+- **Simplified workflow-enforcer** - Reduced from 313 to 58 lines
+- **Simplified hooks** - Removed naggy tips that appeared on every edit/commit
+- **Simplified Stop hook** - Shorter, clearer prompt
+
+### Removed
+- `check-active-task.sh` - Was showing tips on every edit (annoying)
+- `check-git-commit.sh` - Was showing tips on every commit (annoying)
+- `suggest-learning.sh` - Was just suggesting instead of doing
+- PreToolUse hooks - No longer interrupting workflow with reminders
+
+### Philosophy
+- Less is more - clear instructions that Claude will actually follow
+- Don't nag - let Claude work, track automatically
+- Keep only what adds value: session start, file logging, session end
+
 ## [1.3.0] - 2025-01-25
 
 ### Added
