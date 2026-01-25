@@ -1,5 +1,4 @@
 {
-  "description": "Erold workflow hooks - context loading, file tracking, session management",
   "hooks": {
     "SessionStart": [
       {
@@ -28,9 +27,9 @@
       {
         "hooks": [
           {
-            "type": "prompt",
-            "prompt": "If there's an active Erold task from this session: (1) If work complete, call complete_task with summary. (2) If incomplete, call add_task_comment with progress summary for next session. Then respond {\"ok\": true}.",
-            "timeout": 20
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/session-end.sh",
+            "timeout": 10
           }
         ]
       }

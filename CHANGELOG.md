@@ -5,6 +5,22 @@ All notable changes to the Erold Plugin for Claude Code will be documented in th
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.0] - 2025-01-25
+
+### Changed
+- **Stop hook now reliable** - Changed from prompt-based to shell script
+- **README rewritten** - Clear three-layer architecture documented
+- **Cleaner hooks.json** - Removed description field, minimal config
+
+### Added
+- `session-end.sh` - Reliable session end timestamp logging
+
+### Architecture
+Three layers clearly defined:
+1. **Automatic** - Hooks (session-start, log-file-change, session-end)
+2. **Best-effort** - CLAUDE.md instructions
+3. **Manual** - User commands always available
+
 ## [1.4.0] - 2025-01-25
 
 ### Changed
