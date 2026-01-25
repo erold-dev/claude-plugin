@@ -2,11 +2,28 @@
 
 ## Prerequisites
 
-Set environment variables:
+### Option A: Environment Variables (for local dev)
 ```bash
 export EROLD_API_KEY="your_api_key"
-export EROLD_TENANT_ID="your_tenant_id"
-export EROLD_TENANT="$EROLD_TENANT_ID"
+export EROLD_TENANT="your_tenant_id"
+```
+
+### Option B: Global MCP Config (recommended)
+Create `~/.claude/mcp.json`:
+```json
+{
+  "mcpServers": {
+    "erold-pm": {
+      "command": "npx",
+      "args": ["-y", "@erold/mcp-server@latest"],
+      "env": {
+        "EROLD_API_KEY": "erold_YOUR_KEY",
+        "EROLD_TENANT": "YOUR_TENANT_ID",
+        "EROLD_API_URL": "https://api.erold.dev/api/v1"
+      }
+    }
+  }
+}
 ```
 
 ## Test 1: Interactive Mode (Recommended)
@@ -79,6 +96,20 @@ claude --plugin-dir . --debug "mcp,skills,hooks"
 - /erold:task - Quick task operations
 - /erold:search - Search tasks and knowledge
 - /erold:status - Dashboard overview
+
+### Hooks (5 total)
+Test hooks are loaded:
+```
+/hooks
+```
+
+Expected hooks:
+- SessionStart: session-start.sh (auto-load context)
+- PreToolUse (Edit|Write): check-active-task.sh
+- PreToolUse (Bash): check-git-commit.sh
+- PostToolUse (Edit|Write): log-file-change.sh
+- PostToolUse (complete_task): suggest-learning.sh
+- Stop: prompt-based task reminder
 
 ## Troubleshooting
 
