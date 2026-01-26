@@ -5,6 +5,18 @@ All notable changes to the Erold Plugin for Claude Code will be documented in th
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.1] - 2025-01-26
+
+### Fixed
+- **MCP configuration docs** - Updated to use `claude mcp add` command instead of deprecated `~/.claude/mcp.json` file
+- **Setup guide rewritten** - Clear step-by-step instructions with new MCP configuration method
+
+### Migration
+If upgrading from earlier versions, reconfigure MCP using:
+```bash
+claude mcp add -e EROLD_API_KEY=your_key -e EROLD_TENANT=your_tenant -e EROLD_API_URL=https://api.erold.dev/api/v1 -s user erold-pm -- npx -y @erold/mcp-server@latest
+```
+
 ## [1.5.0] - 2025-01-25
 
 ### Changed

@@ -4,24 +4,24 @@ Project management for AI agents. Track tasks, capture knowledge, preserve conte
 
 ## Install
 
+### 1. Install the plugin
 ```bash
 claude plugin install erold-dev/claude-plugin --scope user
 ```
 
-Configure `~/.claude/mcp.json`:
-```json
-{
-  "mcpServers": {
-    "erold-pm": {
-      "command": "npx",
-      "args": ["-y", "@erold/mcp-server@latest"],
-      "env": {
-        "EROLD_API_KEY": "erold_YOUR_KEY",
-        "EROLD_TENANT": "YOUR_TENANT_ID"
-      }
-    }
-  }
-}
+### 2. Add MCP server
+```bash
+claude mcp add \
+  -e EROLD_API_KEY=erold_YOUR_KEY \
+  -e EROLD_TENANT=YOUR_TENANT_ID \
+  -e EROLD_API_URL=https://api.erold.dev/api/v1 \
+  -s user erold-pm -- npx -y @erold/mcp-server@latest
+```
+
+### 3. Verify
+```bash
+claude mcp list
+# Should show: erold-pm: ✓ Connected
 ```
 
 Get credentials from [app.erold.dev](https://app.erold.dev) → Settings.

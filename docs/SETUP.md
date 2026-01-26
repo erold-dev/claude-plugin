@@ -16,58 +16,45 @@ From [app.erold.dev](https://app.erold.dev):
 1. **API Key**: Go to Settings > API Keys > Create New Key
 2. **Tenant ID**: Found in Settings > Workspace, or in the URL after `/t/`
 
-### Step 2: Create Global MCP Config
-
-Create `~/.claude/mcp.json` with your credentials:
-
-```json
-{
-  "mcpServers": {
-    "erold-pm": {
-      "command": "npx",
-      "args": ["-y", "@erold/mcp-server@latest"],
-      "env": {
-        "EROLD_API_KEY": "erold_YOUR_API_KEY_HERE",
-        "EROLD_TENANT": "YOUR_TENANT_ID_HERE",
-        "EROLD_API_URL": "https://api.erold.dev/api/v1"
-      }
-    }
-  }
-}
-```
-
-> **Important:** Always use `~/.claude/mcp.json` for your credentials. This file survives plugin updates. Never edit the plugin cache directory.
-
-**One-liner (replace with your values):**
-```bash
-mkdir -p ~/.claude && cat > ~/.claude/mcp.json << 'EOF'
-{
-  "mcpServers": {
-    "erold-pm": {
-      "command": "npx",
-      "args": ["-y", "@erold/mcp-server@latest"],
-      "env": {
-        "EROLD_API_KEY": "erold_YOUR_KEY",
-        "EROLD_TENANT": "YOUR_TENANT_ID",
-        "EROLD_API_URL": "https://api.erold.dev/api/v1"
-      }
-    }
-  }
-}
-EOF
-```
-
-### Step 3: Install Plugin
+### Step 2: Install Plugin
 
 ```bash
 claude plugin install erold-dev/claude-plugin --scope user
 ```
 
-### Step 4: Restart Claude Code
+### Step 3: Add MCP Server
 
-**Completely quit** Claude Code (Cmd+Q or close terminal) and start fresh.
+Use `claude mcp add` to configure the Erold MCP server:
+
+```bash
+claude mcp add \
+  -e EROLD_API_KEY=erold_YOUR_API_KEY_HERE \
+  -e EROLD_TENANT=YOUR_TENANT_ID_HERE \
+  -e EROLD_API_URL=https://api.erold.dev/api/v1 \
+  -s user erold-pm -- npx -y @erold/mcp-server@latest
+```
+
+**One-liner (replace with your values):**
+```bash
+claude mcp add -e EROLD_API_KEY=erold_YOUR_KEY -e EROLD_TENANT=YOUR_TENANT_ID -e EROLD_API_URL=https://api.erold.dev/api/v1 -s user erold-pm -- npx -y @erold/mcp-server@latest
+```
+
+### Step 4: Verify & Restart
+
+```bash
+claude mcp list
+# Should show: erold-pm: ✓ Connected
+```
+
+**Restart Claude Code** (Cmd+Q or close terminal) to load the MCP tools.
 
 ## Verify Installation
+
+```bash
+# Check MCP server is connected
+claude mcp list
+# Should show: erold-pm: ✓ Connected
+```
 
 In a new Claude Code session:
 
@@ -111,17 +98,26 @@ Your credentials in `~/.claude/mcp.json` are preserved - no action needed after 
 
 ## Troubleshooting
 
-### "Invalid API key format" or MCP not connecting
+### "No MCP servers configured" or MCP not connecting
 
-1. **Check your config has actual values:**
+1. **Check MCP server is added:**
    ```bash
-   cat ~/.claude/mcp.json
+   claude mcp list
    ```
-   Should show your real API key, NOT `${EROLD_API_KEY}` or placeholders.
+   Should show `erold-pm: ✓ Connected`
 
-2. **Restart Claude Code completely** - not just a new session
+2. **If not listed, add it:**
+   ```bash
+   claude mcp add \
+     -e EROLD_API_KEY=erold_YOUR_KEY \
+     -e EROLD_TENANT=YOUR_TENANT_ID \
+     -e EROLD_API_URL=https://api.erold.dev/api/v1 \
+     -s user erold-pm -- npx -y @erold/mcp-server@latest
+   ```
 
-3. **Test MCP server directly:**
+3. **Restart Claude Code completely** - not just a new session
+
+4. **Test MCP server directly:**
    ```bash
    EROLD_API_KEY="your_key" EROLD_TENANT="your_tenant" npx -y @erold/mcp-server@latest
    ```
@@ -136,16 +132,12 @@ which npx
 # Example: /usr/local/bin/npx
 ```
 
-```json
-{
-  "mcpServers": {
-    "erold-pm": {
-      "command": "/usr/local/bin/npx",
-      "args": ["-y", "@erold/mcp-server@latest"],
-      "env": { ... }
-    }
-  }
-}
+```bash
+claude mcp add \
+  -e EROLD_API_KEY=erold_YOUR_KEY \
+  -e EROLD_TENANT=YOUR_TENANT_ID \
+  -e EROLD_API_URL=https://api.erold.dev/api/v1 \
+  -s user erold-pm -- /usr/local/bin/npx -y @erold/mcp-server@latest
 ```
 
 **Option B: Install globally and use binary path**
@@ -155,19 +147,12 @@ which erold-mcp
 # Example: /Users/yourname/.nvm/versions/node/v22/bin/erold-mcp
 ```
 
-```json
-{
-  "mcpServers": {
-    "erold-pm": {
-      "command": "/Users/yourname/.nvm/versions/node/v22/bin/erold-mcp",
-      "env": {
-        "EROLD_API_KEY": "erold_YOUR_KEY",
-        "EROLD_TENANT": "YOUR_TENANT_ID",
-        "EROLD_API_URL": "https://api.erold.dev/api/v1"
-      }
-    }
-  }
-}
+```bash
+claude mcp add \
+  -e EROLD_API_KEY=erold_YOUR_KEY \
+  -e EROLD_TENANT=YOUR_TENANT_ID \
+  -e EROLD_API_URL=https://api.erold.dev/api/v1 \
+  -s user erold-pm -- /Users/yourname/.nvm/versions/node/v22/bin/erold-mcp
 ```
 
 ### Hooks not running
@@ -176,19 +161,27 @@ which erold-mcp
 2. Ensure plugin is enabled: Check `~/.claude/settings.json`
 3. Restart Claude Code completely
 
+### Migrating from old config
+
+If you previously used `~/.claude/mcp.json`, remove it and use `claude mcp add` instead:
+
+```bash
+rm ~/.claude/mcp.json  # Remove old config
+claude mcp add ...     # Add using new method (see Step 3 above)
+```
+
 ## File Locations
 
 | File | Purpose |
 |------|---------|
-| `~/.claude/mcp.json` | Your MCP credentials (edit this one) |
+| `~/.claude.json` | MCP servers (managed via `claude mcp add`) |
 | `~/.claude/settings.json` | Plugin enabled/disabled |
 | `.erold.json` (project root) | Per-project Erold link |
 
 ## Security Note
 
-The `~/.claude/mcp.json` file contains your API key:
-- Ensure `~/.claude/` directory has restricted permissions (`chmod 700 ~/.claude`)
-- Never commit `mcp.json` to version control
+Your API credentials are stored in `~/.claude.json`:
+- Ensure the file has restricted permissions (`chmod 600 ~/.claude.json`)
 - Regenerate API key if compromised at [app.erold.dev](https://app.erold.dev)
 
 ## Getting Help

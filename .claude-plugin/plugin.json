@@ -1,6 +1,6 @@
 {
   "name": "erold",
-  "version": "1.5.0",
+  "version": "1.5.1",
   "description": "AI-native project management with workflow enforcement. Understand → Plan → Execute → Learn.",
   "author": {
     "name": "Erold",
@@ -18,8 +18,7 @@
     "guidelines",
     "ai-native"
   ],
-  "skills": "./skills/",
-  "commands": "./commands/",
-  "hooks": "./hooks/hooks.json",
-  "mcpServers": "./.mcp.json"
+  "skills": "../skills/",
+  "commands": "../commands/",
+  "hooks": "../hooks/hooks.json"
 }
