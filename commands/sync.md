@@ -8,11 +8,10 @@ Synchronize local project state with Erold project management.
 
 ## What This Does
 
-1. **Checks Erold context** - Gets current project state (tasks, knowledge, tech info)
-2. **Compares local state** - Checks `.erold.json` and project configuration
-3. **Syncs bidirectionally**:
-   - Local has updates → Push to Erold
-   - Local missing/corrupted → Restore from Erold
+1. **Checks Erold context** - Gets project, tasks, knowledge, tech info
+2. **Checks local `.erold.json`** - Verifies project link is valid
+3. **Explores codebase** - Scans actual code to assess progress
+4. **Compares & syncs** - Updates Erold tasks if code is ahead
 
 ## Usage
 
@@ -22,29 +21,44 @@ Synchronize local project state with Erold project management.
 
 ## Sync Process
 
-### 1. Load Erold Context
+### 1. Load Erold State
 
 ```
 get_context()
 get_project(projectId)
 get_tech_info(projectId)
+get_project_tasks(projectId)
+list_knowledge(projectId, scope="combined")
 ```
 
 ### 2. Check Local State
 
 - Read `.erold.json` for project link
-- Verify projectId matches
-- Check for local configuration
+- Verify projectId exists and matches
 
-### 3. Compare & Sync
+### 3. Explore Codebase
 
-| Local State | Erold State | Action |
-|-------------|-------------|--------|
-| Valid | Valid | Show status |
-| Outdated | Updated | Pull from Erold |
-| Updated | Outdated | Push to Erold |
-| Missing | Exists | Restore from Erold |
-| Exists | Missing | Create in Erold |
+**This is critical.** Use the Explore agent to:
+- Scan project structure
+- Check what's actually implemented
+- Identify completed work
+- Find work in progress
+
+### 4. Compare & Update
+
+| Code State | Erold Task | Action |
+|------------|------------|--------|
+| Feature complete | Status: todo | → Update to `done` |
+| Work started | Status: todo | → Update to `in-progress` |
+| Blocked/broken | Status: in-progress | → Update to `blocked` |
+| Not started | Status: done | → Flag as incorrect |
+
+### 5. Report & Apply
+
+Show comparison, then:
+- Auto-update task statuses
+- Add comments with implementation details
+- Create tasks for undocumented work found in code
 
 ## Output Format
 
@@ -53,34 +67,34 @@ get_tech_info(projectId)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 📁 Project: {name}
-🔗 Status: In sync | Out of sync | Not linked
+🔗 Local: .erold.json valid
 
 📊 Erold State:
-  • Tasks: 12 (3 in-progress, 2 blocked)
-  • Knowledge: 5 articles
-  • Tech Info: Configured
+  • Tasks: X (Y in-progress, Z todo)
+  • Knowledge: N articles
 
-📋 Local State:
-  • .erold.json: Valid
-  • Project ID: {id}
+🔍 Code Analysis:
+  • Explored: {directories scanned}
+  • Files: {count}
 
-✅ Sync complete - no changes needed
-   OR
-⚠️ Sync needed:
-  • [action to take]
+⚠️ Out of Sync:
+  • "Task A" - Erold: todo → Code: complete ✅
+  • "Task B" - Erold: in-progress → Code: not started ❌
+
+📝 Actions Taken:
+  • Updated "Task A" to done
+  • Added comment to "Task B"
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
 
+## Important
+
+**Always explore the code.** Don't just check `.erold.json`. The value of sync is comparing what Erold thinks vs what's actually in the codebase.
+
 ## When to Use
 
-- Starting work on a project
-- After switching machines
-- If local state seems wrong
-- To verify project is linked correctly
-
-## Notes
-
-- Non-destructive (asks before overwriting)
-- Creates `.erold.json` if missing
-- Updates local config from Erold if corrupted
+- Starting a work session
+- After implementing features
+- Before standup/reporting
+- When tasks seem stale
