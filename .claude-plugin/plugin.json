@@ -18,7 +18,7 @@
     "guidelines",
     "ai-native"
   ],
-  "skills": "../skills/",
-  "commands": "../commands/",
-  "hooks": "../hooks/hooks.json"
+  "skills": "./skills/",
+  "commands": "./commands/",
+  "hooks": "./hooks/hooks.json"
 }
