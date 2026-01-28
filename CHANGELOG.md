@@ -5,6 +5,11 @@ All notable changes to the Erold Plugin for Claude Code will be documented in th
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.4] - 2025-01-26
+
+### Changed
+- **Search Erold first** - Agent now searches knowledge, tasks, and tech info BEFORE exploring codebase
+
 ## [1.5.3] - 2025-01-26
 
 ### Changed
