@@ -49,12 +49,12 @@ Get credentials from [app.erold.dev](https://app.erold.dev) → Settings.
 |-------|--------------|
 | Session starts | Loads project context, shows active tasks |
 | File edited | Logs file path to active task |
-| Session ends | Adds timestamp to active task |
+| Claude stops | Checkpoint: reminds to update Erold if task is active |
 
 ### Best-Effort (CLAUDE.md)
 
 Claude is instructed to:
-- Search knowledge before implementing
+- Search Erold (knowledge, tasks, tech info) BEFORE exploring code
 - Create tasks when user describes work
 - Log failed attempts to task comments
 - Save valuable learnings to knowledge base
@@ -74,6 +74,8 @@ Claude is instructed to:
 | `/erold:guidelines <topic>` | Fetch coding standards |
 | `/erold:plan` | Create tasks from requirements |
 | `/erold:execute <id>` | Work on task with full context |
+| `/erold:sync` | Sync local state with Erold PM |
+| `/erold:report` | Generate progress report |
 
 ## Context Management
 

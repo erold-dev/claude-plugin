@@ -13,8 +13,9 @@ Automatically manage tasks and capture knowledge. Don't ask - do.
 ```
 search_knowledge(query="the problem")  # Find existing solutions
 search_tasks(query="related work")     # Check previous attempts
+get_tech_info(projectId)               # Project stack, commands, notes
 ```
-Read task comments for context on what was tried before.
+Search Erold BEFORE exploring codebase. Read task comments for context on what was tried before.
 
 ### 2. PLAN (Create Task)
 ```
