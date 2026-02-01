@@ -28,8 +28,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/session-end.sh",
-            "timeout": 10
+            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/erold-checkpoint.sh",
+            "timeout": 15
           }
         ]
       }

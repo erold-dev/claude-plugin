@@ -5,7 +5,13 @@ All notable changes to the Erold Plugin for Claude Code will be documented in th
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.5.4] - 2025-01-26
+## [1.6.0] - 2025-01-26
+
+### Added
+- **Erold checkpoint hook** - Stop hook reminds model to update Erold when there's an active task. Uses `stop_hook_active` to prevent loops. Only triggers when a task is in-progress.
+
+### Removed
+- **session-end.sh** - Was firing on every response (Stop != SessionEnd), adding noisy "SESSION ENDED" comments
 
 ### Changed
 - **Search Erold first** - Agent now searches knowledge, tasks, and tech info BEFORE exploring codebase
