@@ -11,13 +11,13 @@ INPUT=$(cat)
 # Prevent infinite loop: if we already triggered, let Claude stop
 STOP_ACTIVE=$(echo "$INPUT" | jq -r '.stop_hook_active // false' 2>/dev/null)
 if [ "$STOP_ACTIVE" = "true" ]; then
-  echo '{"decision": "allow"}'
+  echo '{"decision": "approve"}'
   exit 0
 fi
 
 # Skip if no credentials
 if [ -z "$EROLD_API_KEY" ] || [ -z "$EROLD_TENANT" ]; then
-  echo '{"decision": "allow"}'
+  echo '{"decision": "approve"}'
   exit 0
 fi
 
@@ -30,13 +30,13 @@ elif [ -f ".erold.json" ]; then
 fi
 
 if [ -z "$EROLD_CONFIG" ]; then
-  echo '{"decision": "allow"}'
+  echo '{"decision": "approve"}'
   exit 0
 fi
 
 PROJECT_ID=$(jq -r '.projectId // empty' "$EROLD_CONFIG" 2>/dev/null)
 if [ -z "$PROJECT_ID" ]; then
-  echo '{"decision": "allow"}'
+  echo '{"decision": "approve"}'
   exit 0
 fi
 
@@ -53,7 +53,7 @@ TASK_TITLE=$(echo "$ACTIVE_TASK" | jq -r '.[0].title // empty' 2>/dev/null)
 
 # No active task = nothing to update, let Claude stop
 if [ -z "$TASK_ID" ]; then
-  echo '{"decision": "allow"}'
+  echo '{"decision": "approve"}'
   exit 0
 fi
 
