@@ -1,5 +1,5 @@
 #!/bin/bash
-# log-file-change.sh - Log file changes to Erold task comments
+# log-file-change.sh - Log file changes to Erold
 # PostToolUse hook for Edit/Write
 
 set -e
@@ -39,29 +39,14 @@ if [ -z "$PROJECT_ID" ]; then
 fi
 
 EROLD_API_URL="${EROLD_API_URL:-https://api.erold.dev/api/v1}"
-
-# Get active task (in-progress for this project)
-ACTIVE_TASK=$(curl -s -X GET \
-  "${EROLD_API_URL}/tenants/${EROLD_TENANT}/tasks?projectId=${PROJECT_ID}&status=in-progress&limit=1" \
-  -H "Authorization: Bearer ${EROLD_API_KEY}" \
-  -H "Content-Type: application/json" 2>/dev/null || echo "[]")
-
-TASK_ID=$(echo "$ACTIVE_TASK" | jq -r '.[0].id // empty' 2>/dev/null)
-
-if [ -z "$TASK_ID" ]; then
-  exit 0
-fi
-
-# Log the file change as a task comment
-# Get just the filename for brevity
 FILENAME=$(basename "$FILE_PATH")
-COMMENT="FILE CHANGED: ${FILENAME}\nPath: ${FILE_PATH}\nOperation: ${TOOL_NAME}"
 
-# Post comment to task
+# Log the file change via API
 curl -s -X POST \
-  "${EROLD_API_URL}/tenants/${EROLD_TENANT}/tasks/${TASK_ID}/comments" \
+  "${EROLD_API_URL}/tenants/${EROLD_TENANT}/log" \
   -H "Authorization: Bearer ${EROLD_API_KEY}" \
   -H "Content-Type: application/json" \
-  -d "{\"content\": \"${COMMENT}\"}" > /dev/null 2>&1 || true
+  -d "{\"projectId\": \"${PROJECT_ID}\", \"content\": \"${TOOL_NAME}: ${FILE_PATH}\", \"type\": \"file_change\"}" \
+  > /dev/null 2>&1 || true
 
 exit 0

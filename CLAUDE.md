@@ -1,65 +1,27 @@
-# Erold - Project Management for AI Agents
+# Erold Context Engine
 
-You have Erold MCP tools. Use them automatically.
+You have Erold MCP tools available. They provide project context, activity logging, and search.
 
-## Search Order (Critical)
+## On Session Start
 
-**Before exploring code, ALWAYS search Erold first:**
+Call `get_context()` to load project context, active intents, and recent history.
 
-```
-1. search_knowledge(query="...")     # Existing solutions, patterns, docs
-2. search_tasks(query="...")         # Previous work, failed attempts
-3. get_tech_info(projectId)          # Project stack, commands, notes
-4. THEN explore codebase             # Only if Erold doesn't have answer
-```
+## During Work
 
-This saves time - Erold may already have the answer or document what didn't work.
+Just work. The system captures your activity passively through hooks.
 
-## Core Workflow
+- If you discover something important (architecture decision, failed approach, key insight), call `log(content, type="decision")` or `log(content, type="error")`
+- If you want to track a goal, call `intent("create", title="...")`
+- When you finish a goal, call `intent("complete", intent_id, summary="...")`
 
-### Before Work
-```
-search_knowledge(query="problem or feature")
-search_tasks(query="related work")
-```
-Use what you find. Skip approaches marked as "didn't work".
+## Searching
 
-### During Work
-```
-create_task → start_task → implement
-```
+Call `search(query)` to find previous decisions, errors, or observations.
 
-When something fails:
-```
-add_task_comment(taskId, "TRIED: X\nFAILED: reason\nDON'T RETRY: this approach")
-```
+## Guidelines
 
-### After Work
-```
-complete_task(taskId, summary="what was done")
-```
+Call `get_guidelines(topic)` to fetch coding standards for a specific technology.
 
-If you fixed a tricky error or discovered a pattern:
-```
-search_knowledge(query="check if exists")
-# Only if new:
-create_knowledge(title="Fix: error" or "Pattern: name", category="troubleshooting", content="...")
-```
+## Key Principle
 
-## Quick Reference
-
-| Situation | Do |
-|-----------|-----|
-| Looking for something | `search_knowledge` → `search_tasks` → then explore code |
-| Starting work | `search_knowledge` → `create_task` → `start_task` |
-| Something fails | `add_task_comment` with TRIED/FAILED |
-| Work done | `complete_task` |
-| Tricky fix solved | `create_knowledge` (if new) |
-| User stuck | `block_task` with reason |
-
-## Don't Ask - Do
-
-- Search Erold BEFORE exploring codebase
-- Create tasks automatically when user describes work
-- Log failed attempts immediately
-- Complete tasks when work is done
+You don't need to manage tasks or write knowledge articles. Just code. The system observes and compresses your work automatically.
