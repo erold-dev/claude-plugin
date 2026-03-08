@@ -1,7 +1,7 @@
 {
   "name": "erold",
-  "version": "1.6.0",
-  "description": "AI-native project management with workflow enforcement. Understand → Plan → Execute → Learn.",
+  "version": "2.0.0",
+  "description": "Context Engine for AI agents - passive capture, search, and guidelines.",
   "author": {
     "name": "Erold",
     "email": "hello@erold.dev",
@@ -11,12 +11,11 @@
   "repository": "https://github.com/erold-dev/claude-plugin",
   "license": "MIT",
   "keywords": [
-    "project-management",
-    "workflow",
-    "tasks",
-    "knowledge-base",
+    "context-engine",
+    "passive-capture",
+    "search",
     "guidelines",
-    "ai-native"
+    "ai-agents"
   ],
   "skills": "./skills/",
   "commands": "./commands/",
